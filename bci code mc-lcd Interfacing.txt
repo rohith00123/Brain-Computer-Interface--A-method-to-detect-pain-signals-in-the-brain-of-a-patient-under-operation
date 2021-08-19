@@ -1,0 +1,61 @@
+// LCD interfacing using c 
+#include <reg51.h>    // header file
+sbit MYSW=P3^0;	      // Input switch
+sbit rs=P1^0;		  // control pin1
+sbit rw=P1^1;		  // control pin2
+sbit e= P1^2;		  // control pin3
+void delay(unsigned int);  // Delay function
+void cmd(unsigned char);   // Command fuction
+void dat(unsigned char);   // Data function
+
+void main(void)
+{
+	unsigned char ch[]="Stop Operation!";
+	unsigned char ch1[]="Continueoperation!";
+	unsigned int i,j,k;
+	
+	cmd(0x38);	  // Setting LCD to 8 bit model	(5x7 matrices)
+	cmd(0x01);	  // To clear the display		 
+	cmd(0x0c);	  // Dispaly on cursor off
+	cmd(0x80);	  // Data initialization
+	cmd(0x06);	  // To set LCD in entry model
+if(MYSW==0)		 // Check switch
+{	
+	for(i=0;ch[i]!='\0';i++)	 // Display status
+	    dat(ch[i]);
+ }
+ else						// Display status
+ {
+		cmd(0xc3);
+	for(j=0;ch1[j]!='\0';j++)
+	{
+		dat(ch1[j]);
+ 	 }
+ }
+	
+}
+void delay(unsigned int t)
+{
+	unsigned int i,j;
+	e=1;
+	for(i=0;i<t;i++)
+	for(j=0;j<1275;j++);
+	e=0;
+}
+
+void cmd(unsigned char ch)	  // LCD in command mode
+{
+    
+	rs=0;
+	rw=0;
+	 P2=ch;
+	delay(20);		   // calling delay
+}
+void dat(unsigned char ch)	//Data function
+{
+	
+	rs=1;
+	rw=0;
+	P2=ch;
+	delay(20);
+}
